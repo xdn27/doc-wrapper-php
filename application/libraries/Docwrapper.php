@@ -12,7 +12,6 @@ use Dompdf\Dompdf;
 
 class Docwrapper {
 	
-	private $CI;
 	private $header;
 	private $body;
 	private $data;
@@ -22,11 +21,7 @@ class Docwrapper {
 	private $doc_ex;
 
 	public function __construct(){
-		$this->CI =& get_instance();
-	}
-
-	public function make_header(){
-
+		
 	}
 
 	public function set($column, $data = array(), $option = array()){
@@ -83,37 +78,9 @@ class Docwrapper {
 		$html .= $writer->generateHTMLFooter();
 
 		echo $html;
-		// $writer->save('php://output');
 	}
 
 	public function createPDF(){
-		
-		/*
-		$excel = $this->processing_sheet();
-
-		$filename = 'untitle';
-		if(isset($this->option['title'])){
-			$filename = url_title($this->option['title'], '_', TRUE);
-		}
-
-		$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
-		IOFactory::registerWriter( 'Pdf', $class );
-
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Disposition: attachment;filename="'.$filename.'.pdf"' );
-		header( 'Cache-Control: max-age=0' );
-		header( 'Cache-Control: max-age=1' );
-		
-		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-		header( 'Cache-Control: cache, must-revalidate' );
-		header( 'Pragma: public' );
-		
-		$writer = IOFactory::createWriter( $excel, 'Pdf' );
-		$writer->save('php://output');
-		*/
-
-
 
 		$excel = $this->processing_sheet();
 
@@ -142,26 +109,8 @@ class Docwrapper {
 
 	public function getStyleHTML(){
 		
-		$style['header_title'] = 'line-height: 1.42; font-weight: 700; font-size: 14pt; text-align: center;';
-		$style['header'] = 'font-size: 108%; text-align: center;';
-		$style['header_'] = 'border-bottom: 4px double black;';
-		$style['header_doc'] = 'padding: 20px 30px 30px 30px; line-height: 1.42; text-align: center; font-weight: 700; font-size: 1.17em;';
-
-		$style['table_header'] = 'padding: 6px 8px; border: 1px solid black !important;';
-		$style['table_body'] = 'padding: 6px 8px; border: 1px solid black !important;';
-		$style['summary'] = 'padding: 6px 8px; border: 1px solid black !important;';
-
-		$return = '<link type="text/css" rel="stylesheet" href="'.base_url('css/report-print.css').'" />';
-		$return .= '<style>';
-		
-		$return .= '@media print {
-			@page {
-				size: 297mm 210mm;
-				margin: 2cm 2cm 1.5cm 1.5cm;
-			}
-		}';
-
-		$return .= 'body{ margin: 8px !important; } table{ width: 100%; } table td{ border: initial; }';
+		$style	= array();
+		$return	= '';
 
 		foreach($this->style as $k => $s){
 			if(isset($style[$k])){
@@ -190,7 +139,6 @@ class Docwrapper {
 			$alpha[$i] = Coordinate::stringFromColumnIndex($i);
 			$alpha_last = $alpha[$i];
 
-			// $column_pos[$alpha[$i]] = $this->header[$i-1]['data'];
 			$column_pos[$data_body[$i-1]] = $alpha[$i];
 		}
 
@@ -302,43 +250,6 @@ class Docwrapper {
 
 	public function get_header_excel(&$sheet, $prop, &$row_counter){
 
-		$blogo = get_parameter( 'report_business_logo', 'report_header_param' );
-        $bname = get_parameter( 'report_business_name', 'report_header_param' );
-        $bdet  = get_parameter( 'report_business_detail', 'report_header_param' );
-		$ebdet = explode('<br>', $bdet['key_value_1']);
-
-		$cell_centered = $prop['first_alpha'].$row_counter;
-		
-		$this->setStyleClass('header_title', $row_counter);
-		$sheet->mergeCells($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter);
-		$sheet->setCellValue($prop['first_alpha'].$row_counter++, $bname['key_value_1']);
-		
-		
-		$this->setStyleClass('header', $row_counter);
-		$sheet->mergeCells($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter);
-		$sheet->setCellValue($prop['first_alpha'].$row_counter++, $ebdet[0]);
-		
-		$this->setStyleClass('header', $row_counter);
-		$sheet->mergeCells($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter);
-		$sheet->setCellValue($prop['first_alpha'].$row_counter++, $ebdet[1]);
-		
-		$this->setStyleClass('header', $row_counter);
-		$this->setStyleClass('header_', $row_counter);
-		$sheet->mergeCells($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter);
-		$sheet->getStyle($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOUBLE);
-		$sheet->setCellValue($prop['first_alpha'].$row_counter++, $ebdet[2]);
-		
-		
-		if(isset($this->option['title'])){
-			$row_counter++;
-			$this->setStyleClass('header_doc', $row_counter);
-			$sheet->mergeCells($prop['first_alpha'].$row_counter.':'.$prop['last_alpha'].$row_counter);
-			$sheet->setCellValue($prop['first_alpha'].$row_counter++, $this->option['title']);
-		}
-
-		$cell_centered .= ':'.$prop['last_alpha'].$row_counter;
-
-		$sheet->getStyle($cell_centered)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 	}
 
 	public function get_filter_info_excel(&$sheet, $prop, &$row_counter){
